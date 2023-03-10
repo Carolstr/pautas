@@ -29,4 +29,13 @@ public class PautasResource {
     public Response buscarPautasCadastradas(@QueryParam("status") PautaStatus status, @QueryParam("nome") String nome){
         return Response.ok(service.listarPautasCadastradas(status, nome)).build();
     }
+
+    @GET
+    @Path("/{id}")
+    @Operation(summary = "Buscar detalhes da pauta por id")
+    public Response detalhesPauta(@PathParam("id") String id) throws Exception {
+        return Response.ok(service.buscarDetalhesPauta(id)).build();
+    }
+    
+
 }

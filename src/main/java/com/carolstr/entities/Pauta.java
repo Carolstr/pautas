@@ -19,8 +19,10 @@ public class Pauta {
     private String nome;
     private String descricao;
     private LocalDateTime dataExpiracao;
+    private LocalDateTime dataCriacao;
     private Integer votosPositivos;
     private Integer votosNegativos;
     private List<String> participantes;
     private PautaStatus status;
+
 }
