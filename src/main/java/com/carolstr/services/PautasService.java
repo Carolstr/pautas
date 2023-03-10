@@ -4,6 +4,7 @@ package com.carolstr.services;
 import com.carolstr.entities.Pauta;
 import com.carolstr.entities.PautaStatus;
 import com.carolstr.repositories.PautasRepository;
+import com.carolstr.requests.AtualizarPautaRequest;
 import com.carolstr.requests.PautaRequest;
 import com.carolstr.responses.PautaResponse;
 import org.bson.types.ObjectId;
@@ -67,7 +68,7 @@ public class PautasService {
                     .id(pauta.get().getId().toString())
                     .nome(pauta.get().getNome())
                     .descricao(pauta.get().getDescricao())
-                    .dataExpíracao(pauta.get().getDataExpiracao())
+                    .dataExpiracao(pauta.get().getDataExpiracao())
                     .dataCriacao(pauta.get().getDataCriacao())
                     .status(pauta.get().getStatus())
                     .votosPositivos(pauta.get().getVotosPositivos())
@@ -76,6 +77,31 @@ public class PautasService {
         }else{
             throw new Exception("Ops... Pauta não encontrada!");
         }
+    }
+
+    public void deletarPauta(String id) throws Exception {
+        Optional<Pauta> pauta = repository.findByIdOptional(new ObjectId(id));
+
+        if(pauta.isPresent() && !pauta.get().getStatus().equals(PautaStatus.ENCERRADA)){
+            repository.delete(pauta.get());
+        }else{
+            throw new Exception("Ops... Não foi possível excluir a pauta!");
+        }
+    }
+
+    public void atualizarPauta(String id, AtualizarPautaRequest request) throws Exception {
+        Pauta pauta = repository.findByIdOptional(new ObjectId(id)).orElseThrow(() ->
+                new Exception("Ops... Pauta não encontrada!"));
+
+        if(pauta.getVotosPositivos() > 0 || pauta.getVotosNegativos() > 0){
+            throw new Exception("Ops... Não é possível alterar uma pauta que ja foi votada!");
+        }
+
+        pauta.setNome(request.getNome());
+        pauta.setDescricao(request.getDescricao());
+        pauta.setDataExpiracao(request.getDataExpiracao());
+
+        repository.update(pauta);
     }
 
 

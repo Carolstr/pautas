@@ -1,6 +1,7 @@
 package com.carolstr.resources;
 
 import com.carolstr.entities.PautaStatus;
+import com.carolstr.requests.AtualizarPautaRequest;
 import com.carolstr.requests.PautaRequest;
 import com.carolstr.services.PautasService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -36,6 +37,22 @@ public class PautasResource {
     public Response detalhesPauta(@PathParam("id") String id) throws Exception {
         return Response.ok(service.buscarDetalhesPauta(id)).build();
     }
-    
+
+    @DELETE
+    @Path("/{id}")
+    @Operation(summary = "deletar pauta por id")
+    public Response deletarPauta(@PathParam("id") String id) throws Exception {
+        service.deletarPauta(id);
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    @PATCH
+    @Path("/{id}")
+    @Operation(summary = "atualizar pauta por id")
+    public Response atualizarPauta(@PathParam("id") String id, AtualizarPautaRequest request) throws Exception {
+        service.atualizarPauta(id, request);
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 
 }
