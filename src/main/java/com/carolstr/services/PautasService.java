@@ -1,8 +1,10 @@
 package com.carolstr.services;
 
 
+import com.carolstr.entities.Associado;
 import com.carolstr.entities.Pauta;
 import com.carolstr.entities.PautaStatus;
+import com.carolstr.repositories.AssociadosRepository;
 import com.carolstr.repositories.PautasRepository;
 import com.carolstr.requests.AtualizarPautaRequest;
 import com.carolstr.requests.PautaRequest;
@@ -24,6 +26,9 @@ public class PautasService {
 
     @Inject
     PautasRepository repository;
+
+    @Inject
+    AssociadosRepository associadosRepository;
 
     public Pauta criarPauta(PautaRequest request){
 
@@ -101,6 +106,32 @@ public class PautasService {
         pauta.setNome(request.getNome());
         pauta.setDescricao(request.getDescricao());
         pauta.setDataExpiracao(request.getDataExpiracao());
+
+        repository.update(pauta);
+    }
+
+    public void votarPauta(String pautaId, String cpf, boolean voto) throws Exception {
+        Pauta pauta = repository.findByIdOptional(new ObjectId(pautaId)).orElseThrow(() ->
+                new Exception("Ops... pauta inválida!"));
+
+        if(!pauta.getStatus().equals(PautaStatus.ATIVA)) throw new Exception("Ops... a pauta não esta mais ativa!");
+
+        Associado associado = associadosRepository.buscarAssociadoCpf(cpf).orElseThrow(() ->
+                new Exception("Ops... cpf não cadastrado!"));
+
+        if(!associado.isVotoValido()) throw new Exception("Ops... voto indisponível para o cpf!");
+
+        if(pauta.getParticipantes().stream().anyMatch(participante -> participante.equalsIgnoreCase(associado.id.toString()))){
+            throw new Exception("Ops... você ja votou para esta pauta!");
+        }
+
+        if(voto){
+            pauta.setVotosPositivos(pauta.getVotosPositivos() + 1);
+        }else{
+            pauta.setVotosNegativos(pauta.getVotosNegativos() + 1);
+        }
+
+        pauta.adicionarParticipante(associado.id.toString());
 
         repository.update(pauta);
     }

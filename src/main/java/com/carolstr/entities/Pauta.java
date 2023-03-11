@@ -25,4 +25,8 @@ public class Pauta {
     private List<String> participantes;
     private PautaStatus status;
 
+    public void adicionarParticipante(String idParticipante){
+        this.participantes.add(idParticipante);
+    }
+
 }

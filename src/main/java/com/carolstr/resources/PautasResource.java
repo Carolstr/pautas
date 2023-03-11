@@ -54,5 +54,14 @@ public class PautasResource {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    @PATCH
+    @Path("/votar-pauta/{id}/{cpf}")
+    @Operation(summary = "atualizar pauta por id")
+    public Response votarPauta(@PathParam("id") String id, @PathParam("cpf") String cpf,
+                                   @QueryParam("voto") boolean voto) throws Exception {
+        service.votarPauta(id, cpf, voto);
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 
 }
