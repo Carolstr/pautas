@@ -2,5 +2,5 @@ package com.carolstr.entities;
 
 public enum PautaStatus {
 
-    ATIVA,ENCERRADA
+    ATIVA, APROVADA, RECUSADA, ENCERRADA
 }

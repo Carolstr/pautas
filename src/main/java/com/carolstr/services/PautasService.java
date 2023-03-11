@@ -7,6 +7,7 @@ import com.carolstr.repositories.PautasRepository;
 import com.carolstr.requests.AtualizarPautaRequest;
 import com.carolstr.requests.PautaRequest;
 import com.carolstr.responses.PautaResponse;
+import io.quarkus.scheduler.Scheduled;
 import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -102,6 +103,20 @@ public class PautasService {
         pauta.setDataExpiracao(request.getDataExpiracao());
 
         repository.update(pauta);
+    }
+
+    @Scheduled(every = "60s")
+    public void expirarPautas(){
+        List<Pauta> pautas = repository.findAll().list();
+        for(Pauta pauta: pautas){
+            if(pauta.getDataExpiracao().isBefore(LocalDateTime.now())){
+                if(pauta.getVotosPositivos() == pauta.getVotosNegativos()) pauta.setStatus(PautaStatus.ENCERRADA);
+                else if(pauta.getVotosPositivos() > pauta.getVotosNegativos()) pauta.setStatus(PautaStatus.APROVADA);
+                else if(pauta.getVotosPositivos() < pauta.getVotosNegativos()) pauta.setStatus(PautaStatus.RECUSADA);
+            }
+
+            repository.update(pauta);
+        }
     }
 
 
