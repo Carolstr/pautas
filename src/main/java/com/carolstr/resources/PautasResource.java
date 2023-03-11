@@ -1,6 +1,7 @@
 package com.carolstr.resources;
 
 import com.carolstr.entities.PautaStatus;
+import com.carolstr.exception.PautaInvalidaException;
 import com.carolstr.requests.AtualizarPautaRequest;
 import com.carolstr.requests.PautaRequest;
 import com.carolstr.services.PautasService;
@@ -34,14 +35,14 @@ public class PautasResource {
     @GET
     @Path("/{id}")
     @Operation(summary = "Buscar detalhes da pauta por id")
-    public Response detalhesPauta(@PathParam("id") String id) throws Exception {
+    public Response detalhesPauta(@PathParam("id") String id) throws PautaInvalidaException {
         return Response.ok(service.buscarDetalhesPauta(id)).build();
     }
 
     @DELETE
     @Path("/{id}")
     @Operation(summary = "deletar pauta por id")
-    public Response deletarPauta(@PathParam("id") String id) throws Exception {
+    public Response deletarPauta(@PathParam("id") String id) throws PautaInvalidaException {
         service.deletarPauta(id);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
@@ -49,7 +50,7 @@ public class PautasResource {
     @PATCH
     @Path("/{id}")
     @Operation(summary = "atualizar pauta por id")
-    public Response atualizarPauta(@PathParam("id") String id, AtualizarPautaRequest request) throws Exception {
+    public Response atualizarPauta(@PathParam("id") String id, AtualizarPautaRequest request) throws PautaInvalidaException {
         service.atualizarPauta(id, request);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
@@ -58,7 +59,7 @@ public class PautasResource {
     @Path("/votar-pauta/{id}/{cpf}")
     @Operation(summary = "atualizar pauta por id")
     public Response votarPauta(@PathParam("id") String id, @PathParam("cpf") String cpf,
-                                   @QueryParam("voto") boolean voto) throws Exception {
+                                   @QueryParam("voto") boolean voto) throws PautaInvalidaException {
         service.votarPauta(id, cpf, voto);
         return Response.status(Response.Status.NO_CONTENT).build();
     }

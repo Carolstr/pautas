@@ -4,6 +4,7 @@ package com.carolstr.services;
 import com.carolstr.entities.Associado;
 import com.carolstr.entities.Pauta;
 import com.carolstr.entities.PautaStatus;
+import com.carolstr.exception.PautaInvalidaException;
 import com.carolstr.repositories.AssociadosRepository;
 import com.carolstr.repositories.PautasRepository;
 import com.carolstr.requests.AtualizarPautaRequest;
@@ -69,7 +70,7 @@ public class PautasService {
 
     }
 
-    public PautaResponse buscarDetalhesPauta(String id) throws Exception {
+    public PautaResponse buscarDetalhesPauta(String id) throws PautaInvalidaException {
         Optional<Pauta> pauta = repository.findByIdOptional(new ObjectId(id));
 
         if(pauta.isPresent()){
@@ -84,26 +85,26 @@ public class PautasService {
                     .votosNegativos(pauta.get().getVotosNegativos())
                     .build();
         }else{
-            throw new Exception("Ops... Pauta não encontrada!");
+            throw new PautaInvalidaException("Ops... Pauta não encontrada!");
         }
     }
 
-    public void deletarPauta(String id) throws Exception {
+    public void deletarPauta(String id) throws PautaInvalidaException {
         Optional<Pauta> pauta = repository.findByIdOptional(new ObjectId(id));
 
         if(pauta.isPresent() && !pauta.get().getStatus().equals(PautaStatus.ENCERRADA)){
             repository.delete(pauta.get());
         }else{
-            throw new Exception("Ops... Não foi possível excluir a pauta!");
+            throw new PautaInvalidaException("Ops... Não foi possível excluir a pauta!");
         }
     }
 
-    public void atualizarPauta(String id, AtualizarPautaRequest request) throws Exception {
+    public void atualizarPauta(String id, AtualizarPautaRequest request) throws PautaInvalidaException {
         Pauta pauta = repository.findByIdOptional(new ObjectId(id)).orElseThrow(() ->
-                new Exception("Ops... Pauta não encontrada!"));
+                new PautaInvalidaException("Ops... Pauta não encontrada!"));
 
         if(pauta.getVotosPositivos() > 0 || pauta.getVotosNegativos() > 0){
-            throw new Exception("Ops... Não é possível alterar uma pauta que ja foi votada!");
+            throw new PautaInvalidaException("Ops... Não é possível alterar uma pauta que ja foi votada!");
         }
 
         pauta.setNome(request.getNome());
@@ -113,19 +114,19 @@ public class PautasService {
         repository.update(pauta);
     }
 
-    public void votarPauta(String pautaId, String cpf, boolean voto) throws Exception {
+    public void votarPauta(String pautaId, String cpf, boolean voto) throws PautaInvalidaException {
         Pauta pauta = repository.findByIdOptional(new ObjectId(pautaId)).orElseThrow(() ->
-                new Exception("Ops... pauta inválida!"));
+                new PautaInvalidaException("Ops... pauta inválida!"));
 
-        if(!pauta.getStatus().equals(PautaStatus.ATIVA)) throw new Exception("Ops... a pauta não esta mais ativa!");
+        if(!pauta.getStatus().equals(PautaStatus.ATIVA)) throw new PautaInvalidaException("Ops... a pauta não esta mais ativa!");
 
         Associado associado = associadosRepository.buscarAssociadoCpf(cpf).orElseThrow(() ->
-                new Exception("Ops... cpf não cadastrado!"));
+                new PautaInvalidaException("Ops... cpf não cadastrado!"));
 
-        if(!associado.isVotoValido()) throw new Exception("Ops... voto indisponível para o cpf!");
+        if(!associado.isVotoValido()) throw new PautaInvalidaException("Ops... voto indisponível para o cpf!");
 
         if(pauta.getParticipantes().stream().anyMatch(participante -> participante.equalsIgnoreCase(associado.id.toString()))){
-            throw new Exception("Ops... você ja votou para esta pauta!");
+            throw new PautaInvalidaException("Ops... você ja votou para esta pauta!");
         }
 
         if(voto){
@@ -141,7 +142,7 @@ public class PautasService {
 
     @Scheduled(every = "60s")
     public void expirarPautas(){
-        List<Pauta> pautas = repository.findAll().list();
+        List<Pauta> pautas = repository.buscarPautasAtivas();
         for(Pauta pauta: pautas){
             if(pauta.getDataExpiracao().isBefore(LocalDateTime.now())){
                 if(pauta.getVotosPositivos() == pauta.getVotosNegativos()) pauta.setStatus(PautaStatus.ENCERRADA);

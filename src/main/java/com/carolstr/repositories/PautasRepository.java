@@ -26,4 +26,8 @@ public class PautasRepository implements PanacheMongoRepository<Pauta> {
         query.append("}");
         return find(query.toString()).list();
     }
+
+    public List<Pauta> buscarPautasAtivas(){
+        return find("{status: 'ATIVA'}").list();
+    }
 }

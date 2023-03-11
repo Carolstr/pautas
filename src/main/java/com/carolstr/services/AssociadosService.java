@@ -4,13 +4,11 @@ package com.carolstr.services;
 import com.carolstr.client.apiCep.ApiCepClient;
 import com.carolstr.client.apiCep.responses.ApiCepResponse;
 import com.carolstr.entities.Associado;
-import com.carolstr.entities.Pauta;
-import com.carolstr.entities.PautaStatus;
+import com.carolstr.exception.PautaInvalidaException;
 import com.carolstr.repositories.AssociadosRepository;
 import com.carolstr.requests.AssociadoRequest;
 import com.carolstr.responses.AssociadoResponse;
 import com.carolstr.responses.AssociadosResponse;
-import com.carolstr.responses.PautaResponse;
 import org.bson.types.ObjectId;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -31,10 +29,10 @@ public class AssociadosService {
     @RestClient
     ApiCepClient apiCepClient;
 
-    public Associado cadastrarAssociado(AssociadoRequest request) throws Exception {
+    public Associado cadastrarAssociado(AssociadoRequest request) throws PautaInvalidaException {
         Optional<Associado> optionalAssociado = repository.buscarAssociadoCpf(request.getCpf());
         if(optionalAssociado.isPresent()){
-            throw new Exception("Ops... associado já cadastrado!");
+            throw new PautaInvalidaException("Ops... associado já cadastrado!");
         }
 
         Associado associado = new Associado();
@@ -48,7 +46,7 @@ public class AssociadosService {
                 associado.setCidade(response.getLocalidade());
                 associado.setUf(response.getUf());
             }catch (Exception e){
-                throw new Exception("Ops... CEP inválido!");
+                throw new PautaInvalidaException("Ops... CEP inválido!");
             }
         }
 
@@ -74,9 +72,9 @@ public class AssociadosService {
 
     }
 
-    public void deletarAssociado(String id) throws Exception {
+    public void deletarAssociado(String id) throws PautaInvalidaException {
         Associado associado = repository.findByIdOptional(new ObjectId(id)).orElseThrow(() ->
-                new Exception("Ops... Associado inválido!"));
+                new PautaInvalidaException("Ops... Associado inválido!"));
 
         repository.delete(associado);
     }

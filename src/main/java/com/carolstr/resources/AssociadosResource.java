@@ -1,5 +1,6 @@
 package com.carolstr.resources;
 
+import com.carolstr.exception.PautaInvalidaException;
 import com.carolstr.requests.AssociadoRequest;
 import com.carolstr.services.AssociadosService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -19,7 +20,7 @@ public class AssociadosResource {
 
     @POST
     @Operation(summary = "Cadastrar associado")
-    public Response cadastrarAssociado(AssociadoRequest request) throws Exception {
+    public Response cadastrarAssociado(AssociadoRequest request) throws PautaInvalidaException {
         return Response.status(Response.Status.CREATED).entity(service.cadastrarAssociado(request)).build();
     }
 
@@ -32,7 +33,7 @@ public class AssociadosResource {
     @DELETE
     @Path("/{id}")
     @Operation(summary = "Excluir associado")
-    public Response deletarAssociados(@PathParam("id") String id) throws Exception {
+    public Response deletarAssociados(@PathParam("id") String id) throws PautaInvalidaException {
         service.deletarAssociado(id);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
