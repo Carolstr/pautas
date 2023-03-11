@@ -1,6 +1,6 @@
-package com.carolstr.client.apiCpf;
+package com.carolstr.client.apiCep;
 
-import com.carolstr.client.apiCpf.responses.ApiCepResponse;
+import com.carolstr.client.apiCep.responses.ApiCepResponse;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import javax.ws.rs.GET;

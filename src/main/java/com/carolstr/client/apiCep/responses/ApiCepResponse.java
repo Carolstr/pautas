@@ -1,4 +1,4 @@
-package com.carolstr.client.apiCpf.responses;
+package com.carolstr.client.apiCep.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

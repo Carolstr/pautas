@@ -9,6 +9,7 @@ import com.carolstr.repositories.PautasRepository;
 import com.carolstr.requests.AtualizarPautaRequest;
 import com.carolstr.requests.PautaRequest;
 import com.carolstr.responses.PautaResponse;
+import com.carolstr.responses.PautasResponse;
 import io.quarkus.scheduler.Scheduled;
 import org.bson.types.ObjectId;
 
@@ -53,8 +54,8 @@ public class PautasService {
     }
 
 
-    public List<PautaResponse> listarPautasCadastradas(PautaStatus status, String nome){
-       return repository.buscarPautasCadastradas(status, nome).stream().map(pauta -> {
+    public PautasResponse listarPautasCadastradas(PautaStatus status, String nome){
+       List<PautaResponse> pautas = repository.buscarPautasCadastradas(status, nome).stream().map(pauta -> {
            return PautaResponse.builder()
                    .id(pauta.getId().toString())
                    .nome(pauta.getNome())
@@ -63,6 +64,8 @@ public class PautasService {
                    .dataCriacao(pauta.getDataCriacao())
                    .build();
         }).sorted(Comparator.comparing(PautaResponse::getNome)).collect(Collectors.toList());
+
+       return PautasResponse.builder().pautas(pautas).build();
 
     }
 
