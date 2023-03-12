@@ -4,8 +4,6 @@ import com.carolstr.entities.Associado;
 import com.carolstr.exception.PautaInvalidaException;
 import com.carolstr.requests.AssociadoRequest;
 import com.carolstr.responses.AssociadosResponse;
-import com.carolstr.responses.PautaResponse;
-import com.carolstr.responses.PautasResponse;
 import com.carolstr.services.AssociadosService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -14,6 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,7 +32,7 @@ public class AssociadosResource {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Associado.class))),
             @APIResponse(responseCode = "404", description = "Associado invalido")
     })
-    public Response cadastrarAssociado(AssociadoRequest request) throws PautaInvalidaException {
+    public Response cadastrarAssociado(@Valid AssociadoRequest request) throws PautaInvalidaException {
         return Response.status(Response.Status.CREATED).entity(service.cadastrarAssociado(request)).build();
     }
 

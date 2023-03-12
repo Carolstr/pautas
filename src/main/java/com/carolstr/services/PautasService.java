@@ -109,7 +109,12 @@ public class PautasService {
 
         pauta.setNome(request.getNome());
         pauta.setDescricao(request.getDescricao());
-        pauta.setDataExpiracao(request.getDataExpiracao());
+
+        if(request.getDataExpiracao() != null){
+            pauta.setDataExpiracao(request.getDataExpiracao());
+        }else {
+            pauta.setDataExpiracao(LocalDateTime.now().plusMinutes(1));
+        }
 
         repository.update(pauta);
     }

@@ -40,6 +40,8 @@ public class AssociadosService {
         associado.setCpf(request.getCpf());
         associado.setVotoValido(true);
 
+        /* Realizada integracao com api viacep devido a api descrita no desafio estar fora do ar, dessa forma informar
+        o campo CEP é opcional e serve apenas para completar a tarefa bonus #1 */
         if(Objects.nonNull(request.getCep())){
             try {
                 ApiCepResponse response = apiCepClient.buscarCEP(request.getCep());

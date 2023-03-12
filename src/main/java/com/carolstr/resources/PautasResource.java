@@ -15,6 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,7 +32,7 @@ public class PautasResource {
     @Operation(summary = "Criar pauta")
     @APIResponse(responseCode = "201", description = "Pauta criada com sucesso", content = @Content(mediaType = MediaType.APPLICATION_JSON,
             schema = @Schema(implementation = Pauta.class)))
-    public Response criarPauta(PautaRequest request) {
+    public Response criarPauta(@Valid PautaRequest request) {
         return Response.status(Response.Status.CREATED).entity(service.criarPauta(request)).build();
     }
 
@@ -74,7 +75,7 @@ public class PautasResource {
             @APIResponse(responseCode = "204", description = "sucesso"),
             @APIResponse(responseCode = "404", description = "Pauta invalida")
     })
-    public Response atualizarPauta(@PathParam("id") String id, AtualizarPautaRequest request) throws PautaInvalidaException {
+    public Response atualizarPauta(@PathParam("id") String id, @Valid AtualizarPautaRequest request) throws PautaInvalidaException {
         service.atualizarPauta(id, request);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
