@@ -16,6 +16,7 @@ public class AtualizarPautaRequest {
     @NotNull(message = "Campo nome obrigatório!")
     @NotEmpty(message = "Campo nome obrigatório!")
     private String nome;
+
     private String descricao;
     private LocalDateTime dataExpiracao;
 }
